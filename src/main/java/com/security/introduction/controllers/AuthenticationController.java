@@ -1,6 +1,8 @@
 package com.security.introduction.controllers;
 
+import com.security.introduction.infra.security.TokenService;
 import com.security.introduction.models.user.AuthenticationDTO;
+import com.security.introduction.models.user.LoginResponseDTO;
 import com.security.introduction.models.user.RegisterDTO;
 import com.security.introduction.models.user.User;
 import com.security.introduction.repositories.UserRepository;
@@ -26,12 +28,17 @@ public class AuthenticationController {
     @Autowired
     private UserRepository repository;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Valid AuthenticationDTO data) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/register")

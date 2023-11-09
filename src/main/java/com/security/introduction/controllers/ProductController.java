@@ -32,4 +32,9 @@ public class ProductController {
 
         return ResponseEntity.ok(productList);
     }
+
+    @GetMapping("/teste")
+    public String teste() {
+        return "oi oi oi oi";
+    }
 }
